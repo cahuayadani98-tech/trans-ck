@@ -2,21 +2,53 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRANS CK - Ingreso</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panel TRANS CK</title>
     <style>
-        body { background: #1a237e; font-family: 'Poppins', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 40px; border-radius: 25px; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        h1 { color: #1a237e; margin-bottom: 10px; }
-        button { background: #00d2ff; color: #1a237e; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; margin-top: 20px; }
+        :root { --azul: #1a237e; --blanco: #ffffff; --gris: #f4f7fe; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--gris); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        h1 { color: var(--azul); margin-top: 20px; font-size: 28px; letter-spacing: 2px; }
+        .container { width: 100%; max-width: 500px; margin-top: 30px; }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn-menu { 
+            background: var(--blanco); padding: 30px 10px; border-radius: 25px; 
+            text-decoration: none; color: var(--azul); font-weight: bold; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); display: flex; 
+            flex-direction: column; align-items: center; transition: 0.3s;
+            border: 2px solid transparent;
+        }
+        .btn-menu:active { transform: scale(0.95); border-color: var(--azul); }
+        .icon { font-size: 40px; margin-bottom: 10px; }
+        .footer { margin-top: 50px; color: #888; font-size: 12px; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>🚛 TRANS CK</h1>
-        <p>Sistema de Inventario</p>
-        <button onclick="window.location.href='dashboard.html'">ENTRAR</button>
+
+    <h1>TRANS CK</h1>
+    <p style="color: #666;">Logística y Transporte</p>
+
+    <div class="container">
+        <div class="menu-grid">
+            <a href="dashboard.html" class="btn-menu">
+                <span class="icon">📝</span>
+                <span>Nuevo Registro</span>
+            </a>
+            <a href="camiones.html" class="btn-menu">
+                <span class="icon">🚛</span>
+                <span>Camiones</span>
+            </a>
+            <a href="factura.html" class="btn-menu">
+                <span class="icon">📄</span>
+                <span>Facturas</span>
+            </a>
+            <a href="guia.html" class="btn-menu">
+                <span class="icon">📦</span>
+                <span>Guías</span>
+            </a>
+        </div>
     </div>
+
+    <div class="footer">© 2026 Sistema de Gestión Logística</div>
+
 </body>
 </html>

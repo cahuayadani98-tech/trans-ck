@@ -3,59 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Registro Independiente - TRANS CK</title>
+    <title>Registro TRANS CK</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --azul: #2a3b4e; --celeste: #8ac9d8; --fondo: #f4f7f6; }
         body { font-family: 'Inter', sans-serif; background: var(--fondo); padding: 15px; margin: 0; }
+        
+        /* Tarjetas de sección */
         .section-card { background: white; padding: 20px; border-radius: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        h3 { margin-top: 0; color: var(--azul); font-size: 17px; border-left: 4px solid var(--celeste); padding-left: 10px; }
-        .grid-docs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .auto-num { background: #eef2f3; font-weight: 800; color: var(--azul); border: 1px solid var(--celeste); text-align: center; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 14px; }
-        label { font-size: 11px; font-weight: 700; color: #7f8c8d; text-transform: uppercase; display: block; }
-        .prod-entry { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 5px; }
-        .btn-add { background: var(--celeste); color: var(--azul); border: none; padding: 12px; border-radius: 10px; font-weight: 800; width: 100%; margin: 10px 0; }
-        .temp-item { font-size: 13px; padding: 10px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        h3 { margin-top: 0; color: var(--azul); font-size: 17px; border-left: 4px solid var(--celeste); padding-left: 10px; margin-bottom: 15px; }
+
+        /* Control de Documentos alineado */
+        .grid-docs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: end; }
+        .input-group { display: flex; flex-direction: column; }
+        
+        label { font-size: 10px; font-weight: 800; color: #7f8c8d; text-transform: uppercase; margin-bottom: 2px; }
+        .hint { font-size: 9px; color: #537d8f; font-weight: 600; margin-bottom: 4px; height: 12px; }
+
+        input { width: 100%; padding: 12px; margin: 5px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 14px; font-family: inherit; }
+        
+        /* Estilos específicos para los números de control */
+        .auto-input, .manual-input { 
+            height: 50px; 
+            font-size: 18px; 
+            font-weight: 800; 
+            text-align: center; 
+            margin: 0;
+        }
+        .auto-input { background: #eef2f3; color: var(--azul); border: 1px solid var(--celeste); }
+        .manual-input { border: 2px solid var(--celeste); color: #2ecc71; background: white; }
+
+        /* Detalle de productos */
+        .prod-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; }
+        .btn-add { background: var(--celeste); color: var(--azul); border: none; padding: 12px; border-radius: 10px; font-weight: 800; width: 100%; margin: 15px 0; cursor: pointer; }
+        
+        .temp-item { font-size: 13px; padding: 10px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+        .total-row { text-align: right; font-weight: 800; margin-top: 15px; font-size: 20px; color: var(--azul); }
+
         .btn-save { background: var(--azul); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; width: 100%; font-size: 16px; margin-top: 10px; box-shadow: 0 8px 15px rgba(42,59,78,0.2); }
     </style>
 </head>
 <body>
 
-    <button onclick="location.href='menu.html'" style="margin-bottom:10px; border:none; background:none; font-weight:800; color:var(--azul); cursor:pointer;">← VOLVER AL MENÚ</button>
+    <button onclick="location.href='menu.html'" style="margin-bottom:15px; border:none; background:none; font-weight:800; color:var(--azul); cursor:pointer;">← VOLVER AL MENÚ</button>
 
     <div class="section-card">
-        <h3>Folios de Control</h3>
+        <h3>Control de Documentos</h3>
         <div class="grid-docs">
-            <div>
-                <label>Próxima Guía</label>
-                <input type="text" id="nroGuia" class="auto-num" readonly>
+            <div class="input-group">
+                <label>N° Guía (Fijo)</label>
+                <div class="hint">Automático</div>
+                <input type="text" id="nroGuia" class="auto-input" readonly>
             </div>
-            <div>
-                <label>Próxima Factura</label>
-                <input type="text" id="nroFactura" class="auto-num" readonly>
+            <div class="input-group">
+                <label>N° Factura</label>
+                <div id="hintFactura" class="hint">Cargando...</div>
+                <input type="text" id="nroFactura" class="manual-input" placeholder="Ej: 001 o S/F">
             </div>
         </div>
     </div>
 
     <div class="section-card">
         <h3>Información del Envío</h3>
-        <input type="text" id="remitente" placeholder="Nombre Remitente">
-        <input type="text" id="consignatario" placeholder="Nombre Consignatario">
+        <input type="text" id="remitente" placeholder="Remitente (Quién envía)">
+        <input type="text" id="consignatario" placeholder="Consignatario (Quién recibe)">
         <input type="text" id="destino" placeholder="Ciudad / Destino Final">
     </div>
 
     <div class="section-card">
-        <h3>Detalle de Carga</h3>
-        <div class="prod-entry">
+        <h3>Detalle de Productos</h3>
+        <div class="prod-grid">
             <input type="text" id="pNombre" placeholder="Producto">
             <input type="number" id="pCant" placeholder="Cant.">
             <input type="number" id="pPrecio" placeholder="P. Unit">
         </div>
-        <button class="btn-add" id="btnAdd">+ AGREGAR PRODUCTO</button>
+        <button class="btn-add" id="btnAdd">+ AGREGAR AL DETALLE</button>
+        
         <div id="listaVisual"></div>
-        <div style="text-align: right; font-weight: 800; margin-top: 15px; font-size: 18px;">
-            TOTAL: Bs. <span id="totalVenta" style="color:#27ae60;">0.00</span>
+        
+        <div class="total-row">
+            Total: Bs. <span id="totalVenta">0.00</span>
         </div>
     </div>
 
@@ -75,78 +102,63 @@
         const db = getFirestore(initializeApp(firebaseConfig));
         let carrito = [];
 
-        // --- LÓGICA DE CORRELATIVOS INDEPENDIENTES ---
-        async function generarCorrelativos() {
-            const q = query(collection(db, "servicios"), orderBy("fecha", "desc"), limit(50)); // Revisamos los últimos registros
-            const querySnapshot = await getDocs(q);
+        async function cargarCorrelativos() {
+            const q = query(collection(db, "servicios"), orderBy("fecha", "desc"), limit(100));
+            const snap = await getDocs(q);
             
-            let maxGuia = 0;
-            let maxFactura = 0;
-
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const g = parseInt(data.nroGuia) || 0;
-                const f = parseInt(data.nroFactura) || 0;
-                
-                if (g > maxGuia) maxGuia = g;
-                if (f > maxFactura) maxFactura = f;
+            let maxG = 0, maxF = 0;
+            snap.forEach(doc => {
+                const d = doc.data();
+                const g = parseInt(d.nroGuia) || 0;
+                // Intentamos leer el número de factura solo si es numérico
+                const f = parseInt(d.nroFactura) || 0;
+                if(g > maxG) maxG = g;
+                if(f > maxF) maxF = f;
             });
 
-            // Asignar nuevos números formateados (ej: 0001)
-            document.getElementById('nroGuia').value = (maxGuia + 1).toString().padStart(4, '0');
-            document.getElementById('nroFactura').value = (maxFactura + 1).toString().padStart(4, '0');
+            document.getElementById('nroGuia').value = (maxG + 1).toString().padStart(4, '0');
+            document.getElementById('hintFactura').innerText = `Última: ${maxF.toString().padStart(4, '0')} | Toca: ${(maxF + 1).toString().padStart(4, '0')}`;
         }
 
-        generarCorrelativos();
+        cargarCorrelativos();
 
-        // Agregar al carrito visual
         document.getElementById('btnAdd').onclick = () => {
-            const nombre = document.getElementById('pNombre').value;
-            const cant = parseFloat(document.getElementById('pCant').value);
-            const precio = parseFloat(document.getElementById('pPrecio').value);
-            
-            if(nombre && cant > 0 && precio > 0) {
-                carrito.push({ nombre, cant, precio, subtotal: cant * precio });
+            const n = document.getElementById('pNombre').value;
+            const c = parseFloat(document.getElementById('pCant').value);
+            const p = parseFloat(document.getElementById('pPrecio').value);
+            if(n && c > 0) {
+                carrito.push({ nombre: n, cant: c, precio: p, subtotal: c * p });
                 render();
-                document.getElementById('pNombre').value = "";
-                document.getElementById('pCant').value = "";
+                document.getElementById('pNombre').value = ""; 
+                document.getElementById('pCant').value = ""; 
                 document.getElementById('pPrecio').value = "";
             }
         };
 
         function render() {
             const div = document.getElementById('listaVisual');
-            let total = 0; div.innerHTML = "";
-            carrito.forEach(p => {
-                total += p.subtotal;
-                div.innerHTML += `<div class="temp-item">
-                    <span><b>${p.cant}</b> x ${p.nombre}</span>
-                    <span>Bs. ${p.subtotal.toFixed(2)}</span>
-                </div>`;
+            let t = 0; div.innerHTML = "";
+            carrito.forEach(i => {
+                t += i.subtotal;
+                div.innerHTML += `<div class="temp-item"><span><b>${i.cant}x</b> ${i.nombre}</span><span>Bs. ${i.subtotal.toFixed(2)}</span></div>`;
             });
-            document.getElementById('totalVenta').innerText = total.toFixed(2);
+            document.getElementById('totalVenta').innerText = t.toFixed(2);
         }
 
-        // Guardar en Firebase
         document.getElementById('btnFinalizar').onclick = async () => {
-            if(carrito.length === 0) return alert("Debes agregar al menos un producto.");
-            
-            const nroGuia = document.getElementById('nroGuia').value;
-            const nroFactura = document.getElementById('nroFactura').value;
-
-            const finalData = {
-                nroGuia,
-                nroFactura,
+            if(carrito.length === 0) return alert("Agrega al menos un producto.");
+            const data = {
+                nroGuia: document.getElementById('nroGuia').value,
+                nroFactura: document.getElementById('nroFactura').value || "S/F",
                 remitente: document.getElementById('remitente').value,
                 consignatario: document.getElementById('consignatario').value,
                 destino: document.getElementById('destino').value,
                 items: carrito,
-                total: carrito.reduce((acc, p) => acc + p.subtotal, 0),
+                total: carrito.reduce((acc, i) => acc + i.subtotal, 0),
                 fecha: Date.now()
             };
-
-            await addDoc(collection(db, "servicios"), finalData);
-            alert(`Registro Guardado!\nGuía: ${nroGuia} | Factura: ${nroFactura}`);
+            await addDoc(collection(db, "servicios"), data);
+            alert("¡Registro Exitoso!");
             location.reload();
         };
     </script>

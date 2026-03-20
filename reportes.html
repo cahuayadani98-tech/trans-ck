@@ -1,102 +1,145 @@
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-    const firebaseConfig = { 
-        apiKey: "AIzaSyBtiw8MM-kchif6lCBJkjh9fVfWAAPxqaE", 
-        authDomain: "registro-8f26e.firebaseapp.com", 
-        projectId: "registro-8f26e", 
-        appId: "1:62551766112:web:e59e4b444591a0e7737f05" 
-    };
-    
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-
-    let masterData = []; // Fuente de verdad para el Excel
-
-    onAuthStateChanged(auth, (user) => { if (!user) window.location.href = "index.html"; });
-
-    // Carga de datos optimizada
-    onSnapshot(query(collection(db, "servicios"), orderBy("fecha", "desc")), (snap) => {
-        masterData = [];
-        snap.forEach(d => {
-            const data = d.data();
-            masterData.push({ id: d.id, ...data });
-        });
-        renderTable();
-    });
-
-    window.renderTable = () => {
-        const queryBusq = document.getElementById('search').value.toLowerCase();
-        const body = document.getElementById('tableBody');
-        let sum = 0;
-        body.innerHTML = "";
-
-        // Filtramos datos para mostrar y para tener lista la exportación
-        masterData.forEach(d => {
-            const itemsDetalle = (d.items || []).map(i => i.nombre).join(" ").toLowerCase();
-            const cliente = (d.remitente || "").toLowerCase();
-            
-            if (cliente.includes(queryBusq) || itemsDetalle.includes(queryBusq)) {
-                sum += (d.total || 0);
-                const itemsStr = (d.items || []).map(i => `${i.cant}x ${i.nombre}`).join(", ");
-                
-                body.innerHTML += `
-                    <tr>
-                        <td style="color:#64748b;">${new Date(d.fecha).toLocaleDateString()}</td>
-                        <td><span class="tag-guia">${d.nroGuia}</span></td>
-                        <td class="client-cell"><b>${d.remitente}</b><small>${itemsStr}</small></td>
-                        <td style="font-weight:800;">Bs.${(d.total || 0).toFixed(2)}</td>
-                        <td><button class="btn-action-del" onclick="softDelete('${d.id}')">Eliminar</button></td>
-                    </tr>`;
-            }
-        });
-        document.getElementById('totalView').innerText = `Bs. ${sum.toFixed(2)}`;
-    };
-
-    // FUNCIÓN DE EXCEL CORREGIDA
-    document.getElementById('xlsxOut').onclick = () => {
-        const queryBusq = document.getElementById('search').value.toLowerCase();
-        const reportDate = new Date().toLocaleString();
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reporte Pro - TRANS CK</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #1e293b; --accent: #38bdf8; --success: #22c55e; --bg: #f1f5f9; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: var(--primary); }
         
-        // 1. Definir encabezados profesionales
-        const excelRows = [
-            ["TRANS CK - SISTEMA DE CONTROL LOGÍSTICO"],
-            ["REPORTE DE AUDITORÍA DE CARGA"],
-            ["Generado el:", reportDate],
-            [""],
-            ["FECHA", "GUÍA", "FACTURA", "CLIENTE", "DESTINO", "TOTAL (BS)", "DETALLE DE PRODUCTOS"]
-        ];
+        .nav-bar { max-width: 600px; margin: 0 auto 15px auto; }
+        .btn-nav { background: white; border: 1px solid #e2e8f0; padding: 10px 15px; border-radius: 12px; font-weight: 700; cursor: pointer; }
 
-        // 2. Filtrar los mismos datos que hay en pantalla para el Excel
-        masterData.forEach(d => {
-            const itemsDetalle = (d.items || []).map(i => i.nombre).join(" ").toLowerCase();
-            const cliente = (d.remitente || "").toLowerCase();
+        .kpi-card { background: var(--primary); color: white; padding: 20px; border-radius: 20px; text-align: center; margin: 0 auto 20px auto; max-width: 600px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+        .kpi-card h2 { margin: 5px 0 0 0; font-size: 32px; color: var(--accent); }
 
-            if (cliente.includes(queryBusq) || itemsDetalle.includes(queryBusq)) {
-                const productosTexto = (d.items || []).map(i => `${i.cant} ${i.nombre}`).join(" | ");
-                excelRows.push([
-                    new Date(d.fecha).toLocaleDateString(),
-                    d.nroGuia,
-                    d.nroFactura || "S/F",
-                    d.remitente,
-                    d.destino,
-                    d.total,
-                    productosTexto
-                ]);
-            }
+        .controls { max-width: 600px; margin: 0 auto 20px auto; display: flex; flex-direction: column; gap: 10px; }
+        .search-box { width: 100%; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; font-size: 16px; box-sizing: border-box; }
+        .btn-export { background: var(--success); color: white; border: none; padding: 16px; border-radius: 14px; font-weight: 800; cursor: pointer; }
+
+        .data-table-container { background: white; border-radius: 20px; overflow-x: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        th { background: #f8fafc; padding: 12px; text-align: left; font-size: 11px; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 12px; border-bottom: 1px solid #f8fafc; font-size: 13px; }
+        .client-name { font-weight: 700; display: block; }
+        .item-detail { font-size: 11px; color: #94a3b8; }
+        .btn-del { color: #f43f5e; background: #fff1f2; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: 800; }
+    </style>
+</head>
+<body>
+
+    <div class="nav-bar">
+        <button class="btn-nav" onclick="location.href='menu.html'">← VOLVER</button>
+    </div>
+
+    <div class="kpi-card">
+        <small>RECAUDACIÓN FILTRADA</small>
+        <h2 id="totalDisplay">Bs. 0.00</h2>
+    </div>
+
+    <div class="controls">
+        <input type="text" id="searchInput" class="search-box" placeholder="Buscar por cliente..." oninput="actualizarVista()">
+        <button class="btn-export" id="btnDownloadExcel">📥 DESCARGAR EXCEL PROFESIONAL</button>
+    </div>
+
+    <div class="data-table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Guía</th>
+                    <th>Cliente y Detalle</th>
+                    <th>Total</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tableContent"></tbody>
+        </table>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBtiw8MM-kchif6lCBJkjh9fVfWAAPxqaE", 
+            authDomain: "registro-8f26e.firebaseapp.com", 
+            projectId: "registro-8f26e", 
+            appId: "1:62551766112:web:e59e4b444591a0e7737f05" 
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let dataCache = [];
+
+        onAuthStateChanged(auth, (user) => { if (!user) window.location.href = "index.html"; });
+
+        onSnapshot(query(collection(db, "servicios"), orderBy("fecha", "desc")), (snapshot) => {
+            dataCache = [];
+            snapshot.forEach(d => dataCache.push({ id: d.id, ...d.data() }));
+            actualizarVista();
         });
 
-        // 3. Generar archivo
-        const worksheet = XLSX.utils.aoa_to_sheet(excelRows);
-        const workbook = XLSX.utils.book_new();
-        
-        // Ajuste de anchos de columna
-        worksheet['!cols'] = [{wch:12}, {wch:10}, {wch:12}, {wch:25}, {wch:15}, {wch:12}, {wch:50}];
+        window.actualizarVista = () => {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const table = document.getElementById('tableContent');
+            let total = 0;
+            table.innerHTML = "";
 
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Auditoria_Carga");
-        XLSX.writeFile(workbook, `TRANS_CK_Audit_${Date.now()}.xlsx`);
-    };
-</script>
+            dataCache.forEach(item => {
+                const remitente = (item.remitente || "").toLowerCase();
+                if (remitente.includes(term)) {
+                    total += (item.total || 0);
+                    const detalle = (item.items || []).map(i => `${i.cant}x ${i.nombre}`).join(", ");
+                    table.innerHTML += `
+                        <tr>
+                            <td>${new Date(item.fecha).toLocaleDateString()}</td>
+                            <td><b>${item.nroGuia}</b></td>
+                            <td><span class="client-name">${item.remitente}</span><span class="item-detail">${detalle}</span></td>
+                            <td style="font-weight:800;">Bs.${(item.total || 0).toFixed(2)}</td>
+                            <td><button class="btn-del" onclick="borrarRegistro('${item.id}')">X</button></td>
+                        </tr>`;
+                }
+            });
+            document.getElementById('totalDisplay').innerText = `Bs. ${total.toFixed(2)}`;
+        };
+
+        window.borrarRegistro = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "servicios", id)); };
+
+        document.getElementById('btnDownloadExcel').onclick = () => {
+            const rows = [
+                ["TRANS CK - REPORTE LOGÍSTICO"],
+                ["Fecha:", new Date().toLocaleDateString()],
+                [""],
+                ["FECHA", "GUÍA", "FACTURA", "CLIENTE", "DESTINO", "TOTAL (BS)", "PRODUCTOS"]
+            ];
+
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            dataCache.forEach(item => {
+                if ((item.remitente || "").toLowerCase().includes(term)) {
+                    rows.push([
+                        new Date(item.fecha).toLocaleDateString(),
+                        item.nroGuia,
+                        item.nroFactura || "S/F",
+                        item.remitente,
+                        item.destino,
+                        item.total,
+                        (item.items || []).map(i => `${i.cant} ${i.nombre}`).join(" | ")
+                    ]);
+                }
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Reporte");
+            XLSX.writeFile(wb, `Reporte_TRANS_CK.xlsx`);
+        };
+    </script>
+</body>
+</html>

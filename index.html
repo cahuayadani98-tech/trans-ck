@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Login - TRANS CK</title>
     <style>
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #121212; height: 100vh; display: flex; justify-content: center; align-items: center; color: #ffffff; }
-        .login-card { background: #1e1e1e; padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 90%; max-width: 350px; text-align: center; border: 1px solid #333; }
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(135px, #0a0e2a 0%, #152042 100%); height: 100vh; display: flex; justify-content: center; align-items: center; color: #ffffff; }
+        .login-card { background: #1a2549; padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); width: 90%; max-width: 350px; text-align: center; border: 1px solid #324a87; }
         .logo { font-size: 50px; margin-bottom: 10px; }
-        h1 { color: #4dabf7; margin-bottom: 5px; font-size: 26px; }
-        p { color: #aaa; margin-bottom: 30px; font-size: 14px; }
-        input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #444; border-radius: 12px; box-sizing: border-box; background: #2a2a2a; color: white; font-size: 16px; }
-        input:focus { outline: none; border-color: #4dabf7; }
-        .btn-entrar { display: block; width: 100%; padding: 15px; background: #4dabf7; color: #121212; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 18px; transition: 0.3s; }
+        h1 { color: #4dabf7; margin-bottom: 5px; font-size: 28px; letter-spacing: 1px; }
+        p { color: #a1b1d4; margin-bottom: 30px; font-size: 14px; }
+        input { width: 100%; padding: 15px; margin-bottom: 15px; border: 2px solid #324a87; border-radius: 12px; box-sizing: border-box; background: #222d56; color: white; font-size: 16px; transition: 0.3s; }
+        input:focus { outline: none; border-color: #4dabf7; box-shadow: 0 0 10px rgba(77, 171, 247, 0.5); }
+        .btn-entrar { display: block; width: 100%; padding: 15px; background: #4dabf7; color: #0a0e2a; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 18px; transition: 0.3s; border: none; cursor: pointer; }
         .btn-entrar:active { transform: scale(0.95); background: #3bc9db; }
     </style>
 </head>
@@ -21,10 +21,10 @@
         <div class="logo">🚛</div>
         <h1>TRANS CK</h1>
         <p>Sistema de Gestión Logística</p>
-        <form>
+        <form action="menu.html" method="get">
             <input type="text" placeholder="Usuario" required>
             <input type="password" placeholder="Contraseña" required>
-            <a href="menu.html" class="btn-entrar">ENTRAR</a>
+            <button type="submit" class="btn-entrar">ENTRAR</button>
         </form>
     </div>
 </body>

@@ -2,43 +2,75 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Carga - TRANS CK</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Registro Profesional - TRANS CK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; padding: 15px; background: #f4f7f6; margin: 0; }
-        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
-        .btn-add { background: #8ac9d8; color: #2a3b4e; border: none; padding: 10px; border-radius: 8px; font-weight: bold; width: 100%; margin-bottom: 10px; }
-        .btn-save { background: #2a3b4e; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; font-size: 16px; }
-        .producto-row { background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 5px; font-size: 14px; border-left: 3px solid #537d8f; }
-        .registro-item { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; border: 1px solid #eee; }
+        :root { --azul: #2a3b4e; --celeste: #8ac9d8; --fondo: #f4f7f6; }
+        body { font-family: 'Inter', sans-serif; background: var(--fondo); padding: 15px; margin: 0; color: #333; }
+        
+        .section-card { background: white; padding: 20px; border-radius: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        h3 { margin-top: 0; color: var(--azul); font-size: 18px; border-left: 4px solid var(--celeste); padding-left: 10px; }
+        
+        .grid-docs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 14px; }
+        label { font-size: 12px; font-weight: 700; color: #7f8c8d; text-transform: uppercase; }
+
+        /* Estilo para la tabla de productos */
+        .prod-entry { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 5px; background: #f9f9f9; padding: 10px; border-radius: 10px; margin-top: 10px; }
+        .btn-add { background: var(--celeste); color: var(--azul); border: none; padding: 12px; border-radius: 10px; font-weight: 800; width: 100%; margin-top: 10px; cursor: pointer; }
+        
+        .temp-list { margin-top: 15px; border-top: 1px solid #eee; }
+        .temp-item { font-size: 13px; padding: 8px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+
+        .btn-save { background: var(--azul); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; width: 100%; font-size: 16px; margin-top: 20px; box-shadow: 0 10px 20px rgba(42,59,78,0.2); }
     </style>
 </head>
 <body>
-    <button onclick="location.href='menu.html'" style="margin-bottom:15px; border:none; background:none; font-weight:bold;">← Volver al Menú</button>
 
-    <div class="card">
-        <h3>Nueva Guía de Carga</h3>
-        <input type="text" id="nroGuia" placeholder="N° de Guía">
-        <input type="text" id="nroFactura" placeholder="N° de Factura">
-        <input type="text" id="cliente" placeholder="Nombre del Cliente">
-        <input type="text" id="destino" placeholder="Destino">
-        
-        <hr>
-        <h4>Productos</h4>
-        <div id="listaTemporal"></div>
-        <input type="text" id="prodNombre" placeholder="Nombre del producto">
-        <input type="number" id="prodPrecio" placeholder="Precio (Bs.)">
-        <button class="btn-add" id="btnAddProd">+ Agregar Producto a la lista</button>
-        
-        <button class="btn-save" id="btnGuardarTodo">GUARDAR REGISTRO COMPLETO</button>
+    <button onclick="location.href='menu.html'" style="margin-bottom:15px; border:none; background:none; font-weight:800; color:var(--azul);">← VOLVER</button>
+
+    <div class="section-card">
+        <h3>Documentación</h3>
+        <div class="grid-docs">
+            <div><label>N° Guía</label><input type="text" id="nroGuia" placeholder="0001"></div>
+            <div><label>N° Factura</label><input type="text" id="nroFactura" placeholder="0001"></div>
+        </div>
     </div>
 
-    <div id="historial"></div>
+    <div class="section-card">
+        <h3>Información del Envío</h3>
+        <label>Remitente (Quién envía)</label>
+        <input type="text" id="remitente" placeholder="Ej: Empresa ABC">
+        
+        <label>Consignatario (Quién recibe)</label>
+        <input type="text" id="consignatario" placeholder="Ej: Juan Pérez">
+        
+        <label>Destino</label>
+        <input type="text" id="destino" placeholder="Ej: La Paz - Central">
+    </div>
+
+    <div class="section-card">
+        <h3>Detalle de Carga</h3>
+        <div class="prod-entry">
+            <input type="text" id="pNombre" placeholder="Producto">
+            <input type="number" id="pCant" placeholder="Cant.">
+            <input type="number" id="pPrecio" placeholder="P. Unit">
+        </div>
+        <button class="btn-add" id="btnAdd">+ AGREGAR AL DETALLE</button>
+
+        <div class="temp-list" id="listaVisual">
+            </div>
+        <div style="text-align: right; font-weight: 800; margin-top: 10px;">
+            TOTAL: Bs. <span id="totalVenta">0.00</span>
+        </div>
+    </div>
+
+    <button class="btn-save" id="btnFinalizar">GUARDAR REGISTRO COMPLETO</button>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBtiw8MM-kchif6lCBJkjh9fVfWAAPxqaE",
@@ -47,45 +79,59 @@
             appId: "1:62551766112:web:e59e4b444591a0e7737f05"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        let productosTemporales = [];
+        const db = getFirestore(initializeApp(firebaseConfig));
+        let carrito = [];
 
-        // Agregar producto a la lista visual
-        document.getElementById('btnAddProd').onclick = () => {
-            const nombre = document.getElementById('prodNombre').value;
-            const precio = document.getElementById('prodPrecio').value;
-            if(nombre && precio) {
-                productosTemporales.push({ nombre, precio: parseFloat(precio) });
-                renderTemp();
-                document.getElementById('prodNombre').value = "";
-                document.getElementById('prodPrecio').value = "";
+        // Agregar producto a la lista temporal
+        document.getElementById('btnAdd').onclick = () => {
+            const nombre = document.getElementById('pNombre').value;
+            const cant = parseFloat(document.getElementById('pCant').value);
+            const precio = parseFloat(document.getElementById('pPrecio').value);
+
+            if(nombre && cant > 0 && precio > 0) {
+                const subtotal = cant * precio;
+                carrito.push({ nombre, cant, precio, subtotal });
+                actualizarLista();
+                // Limpiar campos de producto
+                document.getElementById('pNombre').value = "";
+                document.getElementById('pCant').value = "";
+                document.getElementById('pPrecio').value = "";
             }
         };
 
-        function renderTemp() {
-            const div = document.getElementById('listaTemporal');
-            div.innerHTML = productosTemporales.map(p => `<div class="producto-row">${p.nombre} - Bs. ${p.precio}</div>`).join('');
+        function actualizarLista() {
+            const div = document.getElementById('listaVisual');
+            let total = 0;
+            div.innerHTML = "";
+            carrito.forEach(p => {
+                total += p.subtotal;
+                div.innerHTML += `<div class="temp-item">
+                    <span>${p.cant}x ${p.nombre} (Bs. ${p.precio})</span>
+                    <span>Bs. ${p.subtotal.toFixed(2)}</span>
+                </div>`;
+            });
+            document.getElementById('totalVenta').innerText = total.toFixed(2);
         }
 
         // Guardar todo en Firebase
-        document.getElementById('btnGuardarTodo').onclick = async () => {
-            const guia = {
+        document.getElementById('btnFinalizar').onclick = async () => {
+            const finalData = {
                 nroGuia: document.getElementById('nroGuia').value,
                 nroFactura: document.getElementById('nroFactura').value,
-                cliente: document.getElementById('cliente').value,
+                remitente: document.getElementById('remitente').value,
+                consignatario: document.getElementById('consignatario').value,
                 destino: document.getElementById('destino').value,
-                productos: productosTemporales,
-                total: productosTemporales.reduce((acc, p) => acc + p.precio, 0),
+                items: carrito,
+                total: carrito.reduce((acc, p) => acc + p.subtotal, 0),
                 fecha: Date.now()
             };
-            
-            if(guia.cliente && productosTemporales.length > 0) {
-                await addDoc(collection(db, "servicios"), guia);
-                alert("Guía Guardada Correctamente");
+
+            if(finalData.nroGuia && carrito.length > 0) {
+                await addDoc(collection(db, "servicios"), finalData);
+                alert("¡Registro Exitoso!");
                 location.reload();
             } else {
-                alert("Faltan datos o productos");
+                alert("Por favor rellena el N° de Guía y agrega al menos un producto.");
             }
         };
     </script>

@@ -2,45 +2,136 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Factura TRANS CK</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Guías - TRANS CK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Courier New', monospace; padding: 30px; display: flex; justify-content: center; }
-        .invoice-box { width: 100%; max-width: 500px; border: 2px solid #333; padding: 25px; background: white; }
-        .header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 15px; margin-bottom: 20px; }
-        .row { display: flex; justify-content: space-between; margin: 10px 0; }
-        .total { font-size: 22px; font-weight: bold; border-top: 2px solid #333; padding-top: 10px; margin-top: 20px; }
-        @media print { .no-print { display: none; } }
+        body { font-family: 'Inter', sans-serif; background: #eee; padding: 10px; margin: 0; }
+        .invoice-card { background: white; max-width: 600px; margin: auto; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative; }
+        
+        /* Buscador - No se imprime */
+        .search-bar { background: #2a3b4e; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 10px; }
+        .search-bar input { flex: 1; padding: 10px; border-radius: 5px; border: none; }
+        .btn-search { background: #8ac9d8; color: #2a3b4e; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+
+        .header { text-align: center; border-bottom: 2px solid #2a3b4e; padding-bottom: 15px; margin-bottom: 20px; }
+        .header h1 { margin: 0; color: #2a3b4e; font-size: 24px; font-weight: 900; }
+        
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; font-size: 13px; }
+        .info-box b { color: #537d8f; text-transform: uppercase; font-size: 10px; display: block; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #f4f7f6; padding: 10px; text-align: left; font-size: 11px; border-bottom: 2px solid #2a3b4e; }
+        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
+
+        .total-section { text-align: right; margin-top: 20px; border-top: 2px solid #2a3b4e; padding-top: 10px; }
+        .total-section h2 { margin: 0; color: #2a3b4e; font-size: 22px; }
+
+        .btn-print { background: #2a3b4e; color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: 800; margin-top: 20px; cursor: pointer; }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .invoice-card { border: none; box-shadow: none; max-width: 100%; }
+        }
     </style>
 </head>
 <body>
-    <div class="invoice-box">
-        <div class="header">
-            <h2>TRANS CK LOGÍSTICA</h2>
-            <p>Servicio de Transporte Pesado</p>
+
+    <div class="no-print" style="max-width:600px; margin:auto;">
+        <button onclick="location.href='menu.html'" style="margin-bottom:10px; background:none; border:none; color:#2a3b4e; font-weight:bold; cursor:pointer;">← Volver al Menú</button>
+        <div class="search-bar">
+            <input type="text" id="inputBusqueda" placeholder="Ingrese N° de Guía...">
+            <button class="btn-search" id="btnBuscar">BUSCAR</button>
         </div>
-        <div class="row"><span>Fecha:</span> <span id="fechaActual"></span></div>
-        <div class="row"><span>Cliente:</span> <span>____________________</span></div>
-        <hr>
-        <div class="row">
-            <span>Servicio de Flete</span>
-            <span>Bs. <input type="number" id="montoFactura" style="width:80px; font-family:inherit; border:none; border-bottom:1px solid #000;" placeholder="0.00"></span>
-        </div>
-        <div class="total">
-            <span>TOTAL A PAGAR:</span>
-            <span id="totalDisplay">Bs. 0.00</span>
-        </div>
-        <div style="margin-top:40px; text-align:center;">
-            <p>__________________________</p>
-            <p>Firma del Transportista</p>
-        </div>
-        <button class="no-print" onclick="window.print()" style="margin-top:20px; width:100%; padding:10px;">IMPRIMIR FACTURA</button>
-        <button class="no-print" onclick="location.href='menu.html'" style="margin-top:10px; width:100%; padding:10px; background:#ddd; border:none;">VOLVER</button>
     </div>
 
-    <script>
-        document.getElementById('fechaActual').innerText = new Date().toLocaleDateString();
-        document.getElementById('montoFactura').oninput = function() {
-            document.getElementById('totalDisplay').innerText = "Bs. " + (this.value || "0.00");
+    <div class="invoice-card" id="areaImpresion">
+        <div class="header">
+            <h1>TRANS CK LOGÍSTICA</h1>
+            <p style="margin:5px 0; font-size: 12px;">Transporte de Carga Pesada - Bolivia</p>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-box"><b>N° de Guía</b><span id="fGuia">-</span></div>
+            <div class="info-box"><b>N° de Factura</b><span id="fFactura">-</span></div>
+            <div class="info-box"><b>Remitente</b><span id="fRemitente">-</span></div>
+            <div class="info-box"><b>Consignatario</b><span id="fConsignatario">-</span></div>
+            <div class="info-box"><b>Destino</b><span id="fDestino">-</span></div>
+            <div class="info-box"><b>Fecha</b><span id="fFecha">-</span></div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Cant.</th>
+                    <th>Descripción</th>
+                    <th style="text-align: right;">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody id="tablaItems"></tbody>
+        </table>
+
+        <div class="total-section">
+            <p style="margin:0; font-size: 12px; font-weight: 700;">TOTAL A PAGAR</p>
+            <h2 id="fTotal">Bs. 0.00</h2>
+        </div>
+
+        <div style="margin-top: 60px; text-align: center; font-size: 12px;">
+            <p>__________________________</p>
+            <p>Firma y Sello Autorizado</p>
+        </div>
+
+        <button class="btn-print no-print" onclick="window.print()">IMPRIMIR ESTA GUÍA</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBtiw8MM-kchif6lCBJkjh9fVfWAAPxqaE",
+            authDomain: "registro-8f26e.firebaseapp.com",
+            projectId: "registro-8f26e",
+            appId: "1:62551766112:web:e59e4b444591a0e7737f05"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Función para mostrar datos
+        function mostrarGuia(data) {
+            document.getElementById('fGuia').innerText = data.nroGuia || 'S/N';
+            document.getElementById('fFactura').innerText = data.nroFactura || 'S/N';
+            document.getElementById('fRemitente').innerText = data.remitente || '-';
+            document.getElementById('fConsignatario').innerText = data.consignatario || '-';
+            document.getElementById('fDestino').innerText = data.destino || '-';
+            document.getElementById('fFecha').innerText = new Date(data.fecha).toLocaleDateString();
+            document.getElementById('fTotal').innerText = `Bs. ${data.total.toFixed(2)}`;
+
+            const tbody = document.getElementById('tablaItems');
+            tbody.innerHTML = "";
+            (data.items || []).forEach(item => {
+                tbody.innerHTML += `<tr><td>${item.cant}</td><td>${item.nombre}</td><td style="text-align: right;">Bs. ${item.subtotal.toFixed(2)}</td></tr>`;
+            });
+        }
+
+        // Carga la última por defecto al entrar
+        const qUltima = query(collection(db, "servicios"), orderBy("fecha", "desc"), limit(1));
+        const snap = await getDocs(qUltima);
+        snap.forEach(doc => mostrarGuia(doc.data()));
+
+        // Lógica del buscador
+        document.getElementById('btnBuscar').onclick = async () => {
+            const numBusqueda = document.getElementById('inputBusqueda').value;
+            const q = query(collection(db, "servicios"), where("nroGuia", "==", numBusqueda));
+            const querySnapshot = await getDocs(q);
+            
+            if (!querySnapshot.empty) {
+                querySnapshot.forEach(doc => mostrarGuia(doc.data()));
+            } else {
+                alert("No se encontró ninguna guía con ese número.");
+            }
         };
     </script>
 </body>

@@ -2,41 +2,56 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Reporte Contable - TRANS CK</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte Logístico - TRANS CK</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f7f6; }
-        .stats { background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; text-align: center; border-bottom: 4px solid #2ecc71; }
-        table { width: 100%; background: white; border-collapse: collapse; border-radius: 10px; overflow: hidden; font-size: 13px; }
-        th { background: #2a3b4e; color: white; padding: 12px; }
-        td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; }
-        .btn-excel { background: #27ae60; color: white; padding: 15px; border: none; border-radius: 10px; width: 100%; font-weight: bold; margin-bottom: 20px; }
+        body { font-family: 'Inter', sans-serif; background: #f4f7f6; padding: 15px; color: #2a3b4e; margin: 0; }
+        .header-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
+        .btn { padding: 12px 18px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 13px; text-transform: uppercase; }
+        .btn-excel { background: #27ae60; color: white; box-shadow: 0 4px 10px rgba(39,174,96,0.3); }
+        .btn-back { background: #537d8f; color: white; text-decoration: none; }
+
+        .summary-card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin: 15px 0; text-align: center; border-bottom: 5px solid #2ecc71; }
+        .monto-total { font-size: 30px; color: #2ecc71; font-weight: 800; margin-top: 5px; }
+
+        .table-wrapper { background: white; border-radius: 20px; overflow-x: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th { background: #2a3b4e; color: white; padding: 15px; text-align: left; font-size: 12px; text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid #eee; font-size: 13px; }
+        tr:nth-child(even) { background-color: #fcfcfc; }
     </style>
 </head>
 <body>
-    <button onclick="location.href='menu.html'">← Menú</button>
-    <h2>Reporte de Movimientos</h2>
 
-    <div class="stats">
-        <small>INGRESOS TOTALES</small>
-        <h1 id="totalIngresos">Bs. 0.00</h1>
+    <div class="header-nav">
+        <a href="menu.html" class="btn btn-back">← Volver</a>
+        <button class="btn btn-excel" id="exportarExcel">Generar Excel</button>
     </div>
 
-    <button class="btn-excel" id="btnExcel">DESCARGAR EXCEL PROFESIONAL</button>
+    <div class="summary-card">
+        <span style="color: #7f8c8d; font-weight: 600;">VALOR TOTAL DE CARGAS (Bs.)</span>
+        <div class="monto-total" id="montoAcumulado">Bs. 0.00</div>
+    </div>
 
-    <table id="tablaReporte">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>N° Guía</th>
-                <th>N° Factura</th>
-                <th>Cliente</th>
-                <th>Destino</th>
-                <th>Total (Bs.)</th>
-            </tr>
-        </thead>
-        <tbody id="cuerpo"></tbody>
-    </table>
+    <div class="table-wrapper">
+        <table id="tablaMaestra">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>N° Guía</th>
+                    <th>N° Factura</th>
+                    <th>Remitente</th>
+                    <th>Consignatario</th>
+                    <th>Destino</th>
+                    <th>Total (Bs.)</th>
+                </tr>
+            </thead>
+            <tbody id="datosTabla">
+                </tbody>
+        </table>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -52,32 +67,40 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        onSnapshot(query(collection(db, "servicios"), orderBy("fecha", "desc")), (snap) => {
-            const cuerpo = document.getElementById('cuerpo');
-            let totalGeneral = 0;
-            cuerpo.innerHTML = "";
+        // Escuchar cambios en Firebase
+        onSnapshot(query(collection(db, "servicios"), orderBy("fecha", "desc")), (snapshot) => {
+            const tabla = document.getElementById('datosTabla');
+            let acumulado = 0;
+            tabla.innerHTML = "";
 
-            snap.forEach(doc => {
-                const d = doc.data();
-                totalGeneral += d.total;
-                cuerpo.innerHTML += `
+            snapshot.forEach(doc => {
+                const item = doc.data();
+                acumulado += item.total || 0;
+                
+                const fecha = new Date(item.fecha).toLocaleDateString();
+
+                tabla.innerHTML += `
                     <tr>
-                        <td>${new Date(d.fecha).toLocaleDateString()}</td>
-                        <td>${d.nroGuia || '-'}</td>
-                        <td>${d.nroFactura || '-'}</td>
-                        <td>${d.cliente}</td>
-                        <td>${d.destino}</td>
-                        <td><b>Bs. ${d.total.toFixed(2)}</b></td>
+                        <td>${fecha}</td>
+                        <td><b>${item.nroGuia || '-'}</b></td>
+                        <td>${item.nroFactura || '-'}</td>
+                        <td>${item.remitente || '-'}</td>
+                        <td>${item.consignatario || '-'}</td>
+                        <td>${item.destino || '-'}</td>
+                        <td style="color:#27ae60; font-weight:700;">Bs. ${(item.total || 0).toFixed(2)}</td>
                     </tr>
                 `;
             });
-            document.getElementById('totalIngresos').innerText = `Bs. ${totalGeneral.toFixed(2)}`;
+
+            document.getElementById('montoAcumulado').innerText = `Bs. ${acumulado.toFixed(2)}`;
         });
 
-        document.getElementById('btnExcel').onclick = () => {
-            const table = document.getElementById("tablaReporte");
-            const wb = XLSX.utils.table_to_book(table);
-            XLSX.writeFile(wb, "Reporte_TRANS_CK.xlsx");
+        // Función para descargar Excel Profesional
+        document.getElementById('exportarExcel').onclick = () => {
+            const table = document.getElementById("tablaMaestra");
+            const wb = XLSX.utils.table_to_book(table, { sheet: "TRANS CK LOGISTICA" });
+            const fechaHoy = new Date().toISOString().split('T')[0];
+            XLSX.writeFile(wb, `Reporte_General_TRANS_CK_${fechaHoy}.xlsx`);
         };
     </script>
 </body>

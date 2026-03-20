@@ -5,184 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Panel TRANS CK</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    
     <style>
-        /* --- ESTILOS VISUALES (El "motor" de tu diseño) --- */
-        :root {
-            --azul-oscuro: #2a3b4e;
-            --azul-medio: #537d8f;
-            --blanco: #ffffff;
-            --gris-fondo: #f4f7f6;
-            --rojo-salir: #e74c3c;
-        }
-
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: 'Inter', sans-serif;
-            background-color: var(--gris-fondo);
-            color: var(--azul-oscuro);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Cabecera */
-        .header-section {
-            width: 100%;
-            margin-bottom: 30px;
-            text-align: left;
-        }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 800;
-            margin: 0;
-            color: #000;
-            letter-spacing: -1px;
-        }
-
-        .subtitle {
-            margin: 5px 0 0;
-            color: #7f8c8d;
-            font-size: 16px;
-            font-weight: 400;
-        }
-
-        /* Grilla de Botones (Soluciona el desorden) */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 columnas exactas */
-            gap: 15px; /* Espacio entre tarjetas */
-            width: 100%;
-            max-width: 450px;
-        }
-
-        /* Estilo de cada tarjeta (Botón) */
-        .card-menu {
-            background: var(--blanco);
-            padding: 25px 10px;
-            border-radius: 24px;
-            text-decoration: none; /* Quita el subrayado */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.02);
-            transition: all 0.2s ease;
-        }
-
-        /* Efecto al tocar el botón */
-        .card-menu:active {
-            transform: scale(0.96);
-            background-color: #fcfcfc;
-        }
-
-        /* Círculo del Icono */
-        .icon-box {
-            width: 60px;
-            height: 60px;
-            background: #f1f5f9;
-            border-radius: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 28px;
-        }
-
-        /* Texto del Botón */
-        .card-menu span {
-            font-weight: 700;
-            color: var(--azul-oscuro);
-            font-size: 15px;
-        }
-
-        /* Sección y Botón de Cerrar Sesión */
-        .logout-section {
-            width: 100%;
-            max-width: 450px;
-            margin-top: 50px;
-        }
-
-        .btn-exit {
-            width: 100%;
-            padding: 16px;
-            background: none;
-            border: 2px solid var(--rojo-salir);
-            color: var(--rojo-salir);
-            border-radius: 16px;
-            font-weight: 700;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-exit:active {
-            background-color: var(--rojo-salir);
-            color: white;
-        }
-
+        :root { --azul: #2a3b4e; --gris: #f4f7f6; --rojo: #e74c3c; }
+        body { margin: 0; padding: 20px; font-family: 'Inter', sans-serif; background: var(--gris); display: flex; flex-direction: column; align-items: center; }
+        .header { width: 100%; margin-bottom: 30px; }
+        h1 { font-size: 28px; font-weight: 800; margin: 0; letter-spacing: -1px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 450px; }
+        .card { background: white; padding: 25px 10px; border-radius: 24px; text-decoration: none; display: flex; flex-direction: column; align-items: center; box-shadow: 0 8px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); }
+        .icon { width: 60px; height: 60px; background: #f1f5f9; border-radius: 20px; display: flex; justify-content: center; align-items: center; margin-bottom: 12px; font-size: 28px; }
+        span { font-weight: 700; color: var(--azul); font-size: 15px; }
+        .btn-exit { margin-top: 50px; width: 100%; max-width: 450px; padding: 16px; background: none; border: 2px solid var(--rojo); color: var(--rojo); border-radius: 16px; font-weight: 700; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <div class="header-section">
+    <div class="header">
         <h1>Panel Principal</h1>
-        <p class="subtitle">TRANS CK Logística</p>
+        <p style="color:#7f8c8d; margin:5px 0 0;">TRANS CK Logística</p>
     </div>
-
-    <div class="grid-container">
-        
-        <a href="camiones.html" class="card-menu">
-            <div class="icon-box">🚚</div>
-            <span>Camiones</span>
-        </a>
-
-        <a href="guias.html" class="card-menu">
-            <div class="icon-box">📝</div>
-            <span>Registro</span>
-        </a>
-
-        <a href="factura.html" class="card-menu">
-            <div class="icon-box">💵</div>
-            <span>Factura</span>
-        </a>
-
-        <a href="reportes.html" class="card-menu">
-            <div class="icon-box">📈</div>
-            <span>Reportes</span>
-        </a>
+    <div class="grid">
+        <a href="camiones.html" class="card"><div class="icon">🚚</div><span>Camiones</span></a>
+        <a href="guias.html" class="card"><div class="icon">📝</div><span>Registro</span></a>
+        <a href="factura.html" class="card"><div class="icon">💵</div><span>Factura</span></a>
+        <a href="reportes.html" class="card"><div class="icon">📈</div><span>Reportes</span></a>
     </div>
-
-    <div class="logout-section">
-        <button class="btn-exit" id="btnLogOut">Cerrar Sesión</button>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-        // Configuración de tu proyecto Firebase (Mantenla tal cual)
-        const firebaseConfig = {
-            apiKey: "AIzaSyBtiw8MM-kchif6lCBJkjh9fVfWAAPxqaE",
-            authDomain: "registro-8f26e.firebaseapp.com",
-            projectId: "registro-8f26e",
-            appId: "1:62551766112:web:e59e4b444591a0e7737f05"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        // Función para salir
-        document.getElementById('btnLogOut').addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = "index.html";
-            });
-        });
-    </script>
+    <button class="btn-exit" onclick="location.href='index.html'">Cerrar Sesión</button>
 </body>
 </html>

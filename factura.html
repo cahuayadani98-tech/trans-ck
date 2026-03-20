@@ -2,37 +2,46 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facturas - TRANS CK</title>
+    <title>Factura TRANS CK</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0a0e2a; color: white; padding: 20px; }
-        .factura-box { background: white; color: #333; padding: 20px; border-radius: 10px; max-width: 600px; margin: auto; }
-        .header-fact { border-bottom: 2px solid #4dabf7; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; }
-        .logo-ck { color: #152042; font-weight: bold; font-size: 24px; }
-        .total-box { background: #f8f9fa; padding: 15px; text-align: right; margin-top: 20px; border-radius: 8px; }
-        .btn-print { display: block; width: 100%; padding: 15px; background: #4dabf7; color: white; border: none; border-radius: 10px; margin-top: 20px; font-weight: bold; }
+        body { font-family: 'Courier New', monospace; padding: 30px; display: flex; justify-content: center; }
+        .invoice-box { width: 100%; max-width: 500px; border: 2px solid #333; padding: 25px; background: white; }
+        .header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 15px; margin-bottom: 20px; }
+        .row { display: flex; justify-content: space-between; margin: 10px 0; }
+        .total { font-size: 22px; font-weight: bold; border-top: 2px solid #333; padding-top: 10px; margin-top: 20px; }
+        @media print { .no-print { display: none; } }
     </style>
 </head>
 <body>
-    <a href="menu.html" style="color: #4dabf7; text-decoration: none;">← Volver</a>
-    <h2 style="text-align: center; color: #4dabf7;">Visor de Facturas</h2>
-
-    <div class="factura-box">
-        <div class="header-fact">
-            <div class="logo-ck">TRANS CK</div>
-            <div><strong>N° 0001</strong></div>
+    <div class="invoice-box">
+        <div class="header">
+            <h2>TRANS CK LOGÍSTICA</h2>
+            <p>Servicio de Transporte Pesado</p>
         </div>
-        <p><strong>Cliente:</strong> Distribuidora Norte</p>
-        <p><strong>Fecha:</strong> 19/03/2026</p>
+        <div class="row"><span>Fecha:</span> <span id="fechaActual"></span></div>
+        <div class="row"><span>Cliente:</span> <span>____________________</span></div>
         <hr>
-        <table style="width: 100%; text-align: left;">
-            <tr><th>Carga</th><th>Cant.</th><th>Subtotal</th></tr>
-            <tr><td>Cemento Wari</td><td>100</td><td>5000 Bs.</td></tr>
-        </table>
-        <div class="total-box">
-            <span style="font-size: 20px;">Total: <strong>5000 Bs.</strong></span>
+        <div class="row">
+            <span>Servicio de Flete</span>
+            <span>Bs. <input type="number" id="montoFactura" style="width:80px; font-family:inherit; border:none; border-bottom:1px solid #000;" placeholder="0.00"></span>
         </div>
+        <div class="total">
+            <span>TOTAL A PAGAR:</span>
+            <span id="totalDisplay">Bs. 0.00</span>
+        </div>
+        <div style="margin-top:40px; text-align:center;">
+            <p>__________________________</p>
+            <p>Firma del Transportista</p>
+        </div>
+        <button class="no-print" onclick="window.print()" style="margin-top:20px; width:100%; padding:10px;">IMPRIMIR FACTURA</button>
+        <button class="no-print" onclick="location.href='menu.html'" style="margin-top:10px; width:100%; padding:10px; background:#ddd; border:none;">VOLVER</button>
     </div>
-    <button class="btn-print">COMPARTIR / IMPRIMIR</button>
+
+    <script>
+        document.getElementById('fechaActual').innerText = new Date().toLocaleDateString();
+        document.getElementById('montoFactura').oninput = function() {
+            document.getElementById('totalDisplay').innerText = "Bs. " + (this.value || "0.00");
+        };
+    </script>
 </body>
 </html>

@@ -6,23 +6,72 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #374151; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; }
-        .card { background: white; padding: 40px; border-radius: 24px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
-        h1 { color: #111827; font-size: 20px; margin-bottom: 20px; }
-        input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #e5e7eb; background: #f9fafb; box-sizing: border-box; }
-        button { width: 100%; padding: 14px; border-radius: 10px; border: none; background: #facc15; color: #1f2937; font-weight: 800; cursor: pointer; }
-        a { display: block; margin-top: 15px; color: #374151; font-size: 13px; text-decoration: none; font-weight: 600; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #1f2937; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .card { background: white; padding: 40px; border-radius: 30px; width: 100%; max-width: 320px; text-align: center; }
+        .logo-box { background: #facc15; width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        h1 { color: #1f2937; font-size: 22px; font-weight: 800; margin-bottom: 25px; }
+        .input-group { position: relative; width: 100%; margin-bottom: 12px; }
+        input { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #f3f4f6; background: #f9fafb; box-sizing: border-box; outline: none; }
+        .toggle-pass { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #9ca3af; display: flex; align-items: center; }
+        button { width: 100%; padding: 18px; border-radius: 15px; border: none; background: #facc15; color: #1f2937; font-weight: 800; cursor: pointer; text-transform: uppercase; }
+        .link { display: block; margin-top: 20px; color: #6b7280; font-size: 13px; text-decoration: none; }
     </style>
 </head>
 <body>
     <div class="card">
-        <i data-lucide="user-plus" style="margin-bottom: 10px;"></i>
+        <div class="logo-box"><i data-lucide="user-plus" style="color: #1f2937;"></i></div>
         <h1>Crear Cuenta</h1>
-        <input type="text" placeholder="Nombre Completo">
-        <input type="password" placeholder="Contraseña">
-        <button onclick="location.href='index.html'">REGISTRARSE</button>
-        <a href="index.html">¿Ya tienes cuenta? Entrar</a>
+        <div class="input-group"><input type="email" id="regEmail" placeholder="Correo (ej: dany@gmail.com)"></div>
+        <div class="input-group">
+            <input type="password" id="regPass" placeholder="Nueva Contraseña">
+            <div class="toggle-pass" onclick="togglePass('regPass', 'regEyeIcon')">
+                <i data-lucide="eye" id="regEyeIcon" style="width: 20px;"></i>
+            </div>
+        </div>
+        <button id="btnReg">REGISTRARSE AHORA</button>
+        <a href="index.html" class="link">¿Ya tienes cuenta? <b>Entrar</b></a>
     </div>
-    <script>lucide.createIcons();</script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCjXNx1UB2I7mt_JUpBr4E05hJuFJWL6k4",
+            authDomain: "trans-huayna-kapac.firebaseapp.com",
+            projectId: "trans-huayna-kapac",
+            storageBucket: "trans-huayna-kapac.firebasestorage.app",
+            messagingSenderId: "683920138332",
+            appId: "1:683920138332:web:b028d2dae6d92aca5dc699"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        document.getElementById('btnReg').addEventListener('click', () => {
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            if(pass.length < 6) { alert("La contraseña debe tener al menos 6 caracteres"); return; }
+
+            createUserWithEmailAndPassword(auth, email, pass)
+                .then(() => { alert("¡Usuario registrado en la nube!"); window.location.href = 'index.html'; })
+                .catch((error) => { alert("Error: " + error.message); });
+        });
+    </script>
+    <script>
+        lucide.createIcons();
+        function togglePass(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = "password";
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+    </script>
 </body>
 </html>

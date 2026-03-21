@@ -6,22 +6,70 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #374151; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; }
-        .card { background: white; padding: 50px; border-radius: 24px; width: 100%; max-width: 300px; text-align: center; }
-        .logo-box { background: #facc15; width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-        h1 { font-size: 16px; font-weight: 800; color: #1f2937; margin-bottom: 25px; }
-        input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #e5e7eb; box-sizing: border-box; }
-        button { width: 100%; padding: 14px; border: none; border-radius: 10px; background: #1f2937; color: #facc15; font-weight: 800; cursor: pointer; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #1f2937; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .card { background: white; padding: 40px; border-radius: 30px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .logo-box { background: #facc15; width: 70px; height: 70px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; }
+        h1 { font-size: 18px; font-weight: 800; color: #1f2937; margin-bottom: 30px; }
+        .input-group { position: relative; width: 100%; margin-bottom: 15px; }
+        input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #f3f4f6; background: #f9fafb; box-sizing: border-box; outline: none; }
+        .toggle-pass { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #9ca3af; display: flex; align-items: center; }
+        button { width: 100%; padding: 18px; border: none; border-radius: 15px; background: #1f2937; color: #facc15; font-weight: 800; cursor: pointer; text-transform: uppercase; }
+        .link { display: block; margin-top: 20px; color: #6b7280; font-size: 13px; text-decoration: none; }
     </style>
 </head>
 <body>
     <div class="card">
-        <div class="logo-box"><i data-lucide="truck"></i></div>
+        <div class="logo-box"><i data-lucide="truck" style="width: 35px; color: #1f2937;"></i></div>
         <h1>TRANS HUAYNA KAPAC</h1>
-        <input type="text" placeholder="Usuario">
-        <input type="password" placeholder="Contraseña">
-        <button onclick="location.href='menu.html'">ENTRAR AL SISTEMA</button>
+        <div class="input-group"><input type="email" id="email" placeholder="Correo electrónico"></div>
+        <div class="input-group">
+            <input type="password" id="pass" placeholder="Contraseña">
+            <div class="toggle-pass" onclick="togglePass('pass', 'eyeIcon')">
+                <i data-lucide="eye" id="eyeIcon" style="width: 20px;"></i>
+            </div>
+        </div>
+        <button id="btnLogin">ENTRAR AL SISTEMA</button>
+        <a href="registro.html" class="link">¿No tienes cuenta? <b>Regístrate aquí</b></a>
     </div>
-    <script>lucide.createIcons();</script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCjXNx1UB2I7mt_JUpBr4E05hJuFJWL6k4",
+            authDomain: "trans-huayna-kapac.firebaseapp.com",
+            projectId: "trans-huayna-kapac",
+            storageBucket: "trans-huayna-kapac.firebasestorage.app",
+            messagingSenderId: "683920138332",
+            appId: "1:683920138332:web:b028d2dae6d92aca5dc699"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        document.getElementById('btnLogin').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+            signInWithEmailAndPassword(auth, email, pass)
+                .then(() => { window.location.href = 'dashboard.html'; })
+                .catch((error) => { alert("Error: Datos incorrectos"); });
+        });
+    </script>
+    <script>
+        lucide.createIcons();
+        function togglePass(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = "password";
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+    </script>
 </body>
 </html>
